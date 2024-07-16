@@ -9,13 +9,12 @@ gcc -pthread ...
 #include <math.h>
 #include <iostream>
 #include <time.h>
+#include <chrono>
 
 int iteracoes = 1000;
 
 void* worker(void* thread_id){
-	printf("\tCriando thread %ld.\n",(long)thread_id);
-	clock_t t;
-	t = clock();
+	auto start = std::chrono::high_resolution_clock::now();
 	// printf("*** teste: endereço de t = %ld\n",(long)&t);
 	for (int i=0; i<iteracoes; i++){
 		for (int j=0; j<iteracoes; j++){
@@ -24,8 +23,9 @@ void* worker(void* thread_id){
 			}
 		}
 	}
-	t = clock() - t;
-	printf("\tThread %ld finalizada.\t(Tempo de execução=%.3lf)\n", (long)thread_id,(double)t/CLOCKS_PER_SEC);
+	auto end = std::chrono::high_resolution_clock::now();
+	std::chrono::duration<double> duration = end - start;
+	std::cout << "\tThread " << (long)thread_id << " finalizada.\t" << "(Tempo de execução= " << duration.count() << " segundos)\n";
 	pthread_exit(NULL);
 }
 
@@ -33,11 +33,14 @@ int main(int argc, char * argv[]){
 
 	int n_threads = atol(argv[1]);
 	pthread_t threads[n_threads];
+	long thread_params[n_threads] = {0};
 	
 	printf("\nTeste de threads concorrentes:\n");
 	clock_t t1 = clock();
     for (long t = 0; t < n_threads; t++) {
-        pthread_create(&threads[t], NULL, worker, (void*)t);
+		thread_params[t]=t;
+		std::cout << "\tCriando thread " << thread_params[t] << ".\n";
+        pthread_create(&threads[t], NULL, worker, (void*)thread_params[t]);
     }
 
 	for (int t = 0; t < n_threads; t++) {
@@ -49,7 +52,9 @@ int main(int argc, char * argv[]){
 	clock_t t2 = clock();
 	printf("\nTeste de threads sequenciais:\n");
 	for (long t = 0; t < n_threads; t++) {
-        pthread_create(&threads[t], NULL, worker, (void*)t);
+		thread_params[t]=t;
+		std::cout << "\tCriando thread " << thread_params[t] << ".\n";
+        pthread_create(&threads[t], NULL, worker, (void*)thread_params[t]);
 		pthread_join(threads[t], NULL);
     }
 	t2 = clock() - t2;
