@@ -15,7 +15,6 @@ int iteracoes = 1000;
 
 void* worker(void* thread_id){
 	auto start = std::chrono::high_resolution_clock::now();
-	// printf("*** teste: endereço de t = %ld\n",(long)&t);
 	for (int i=0; i<iteracoes; i++){
 		for (int j=0; j<iteracoes; j++){
 			for (int k=0; k<iteracoes; k++){
@@ -42,7 +41,6 @@ int main(int argc, char * argv[]){
 		std::cout << "\tCriando thread " << thread_params[t] << ".\n";
         pthread_create(&threads[t], NULL, worker, (void*)thread_params[t]);
     }
-
 	for (int t = 0; t < n_threads; t++) {
 		pthread_join(threads[t], NULL);
 	}
