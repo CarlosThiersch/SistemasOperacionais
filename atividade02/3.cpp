@@ -57,11 +57,12 @@ int main(int argc, char * argv[]) {
 	int produtores = atol(argv[2]);
 	sem_init(&sem_vazios,0,buffer_size);
 	sem_init(&sem_preenchidos,0,0);
-	pthread_t threads[consumidores+produtores];
+	pthread_t threads_consumidores[consumidores];
+	pthread_t threads_produtores[produtores];
 	for(long t = 0; t < produtores; t++)
-		pthread_create(&threads[t], NULL, produtor, (void *)t);
-	for (long t =0; t<consumidores;t++)
-		pthread_create(&threads[t], NULL, consumidor, (void *)t);
+		pthread_create(&threads_produtores[t], NULL, produtor, (void *)t);
+	for (long t = 0; t < consumidores; t++)
+		pthread_create(&threads_consumidores[t], NULL, consumidor, (void *)t);
 	
 	while(1);
 	return 0;
