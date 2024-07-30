@@ -29,6 +29,18 @@ if __name__ == "__main__":
         message = input("Press Button")#Não altere essa linha
         p = random.randint(0, len(objects) - 1)#Seleciona um objeto qualquer da Lista
         
-        print(objects[p].__dict__) #Não altere essa linha
+        #print(objects[p].__dict__) #Não altere essa linha
+        data_string = pickle.dumps(objects[p])
+        client_socket.send(data_string)
         
+        
+        received_data = client_socket.recv(1024).decode()  
+        try:
+            received_int = int(received_data)
+            objects[p].idade = received_int
+        except ValueError as e:
+            print(f"Failed to convert data to integer: {e}")
+        print(objects[p].__dict__) #Não altere essa linha
+
+
     client_socket.close()
