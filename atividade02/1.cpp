@@ -24,12 +24,15 @@ void* worker(void *thread_id){
 	//auto start = std::chrono::high_resolution_clock::now();
 	//int cpu = sched_getcpu();
     //printf("Thread %ld está sendo executada no núcleo %d\n", (long)thread_id, cpu);
-
-	pthread_mutex_lock(&mutex);
+	int acc_thread = 0;
+	
 	for (int i=0; i<iteracoes; i++){
-		acc = acc + 1;
+		acc_thread += 1;
 	}
 	//usleep(500000);
+
+	pthread_mutex_lock(&mutex);
+	acc += acc_thread;
 	pthread_mutex_unlock(&mutex);
 	
 	//auto end = std::chrono::high_resolution_clock::now();
